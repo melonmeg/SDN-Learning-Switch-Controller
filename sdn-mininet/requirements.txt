@@ -1,0 +1,11 @@
+# SDN Learning Switch — Python dependencies
+# Install with:  pip install -r requirements.txt
+
+ryu>=4.34
+eventlet==0.30.2
+netaddr>=0.8.0
+oslo.config>=6.11.0
+tinyrpc>=1.0.4
+
+# Testing
+pytest>=7.0
