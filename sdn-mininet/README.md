@@ -319,16 +319,18 @@ OK
 
 ## Proof of Execution
 
-Add screenshots to `docs/screenshots/`:
 
-| File | Content |
-|------|---------|
-| `01_controller_start.png` | Ryu controller startup output |
-| `02_mininet_pingall.png` | `pingall` showing 0% packet loss |
-| `03_dump_flows_s1.png` | Flow table after h1↔h2 ping |
-| `04_wireshark_packetin.png` | Wireshark showing Packet-In / Flow-Mod |
-| `05_scenario_b_failure.png` | Ping failure after link down |
-| `06_unit_tests_pass.png` | All unit tests passing |
+| File                      | Description        |
+| ------------------------- | ------------------ |
+| `01_controller_start.png` | Controller startup |
+| `02_pingall.png`          | Ping results       |
+| `03_learning_logs.png`    | Learning behavior  |
+| `04_flow_table.png`       | Flow rules         |
+| `05_link_failure.png`     | Failure scenario   |
+| `06_recovery.png`         | Network restored   |
+| `07_test.png`             | Test results       |
+| `08_wireshark.png`        | OpenFlow capture   |
+
 
 ---
 
