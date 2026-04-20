@@ -5,22 +5,6 @@
 
 ---
 
-## Table of Contents
-
-1. [Problem Statement](#problem-statement)  
-2. [Architecture Overview](#architecture-overview)  
-3. [Repository Structure](#repository-structure)  
-4. [Prerequisites](#prerequisites)  
-5. [Setup & Execution](#setup--execution)  
-6. [Controller Logic Deep-Dive](#controller-logic-deep-dive)  
-7. [Test Scenarios](#test-scenarios)  
-8. [Flow Rule Inspection](#flow-rule-inspection)  
-9. [Expected Output](#expected-output)  
-10. [Proof of Execution](#proof-of-execution)  
-11. [Troubleshooting](#troubleshooting)
-
----
-
 ## Problem Statement
 
 Implement an SDN controller that mimics a **Layer-2 learning switch** by:
@@ -77,15 +61,11 @@ OVS switch (table miss) ──► Packet-In ──► Ryu Controller
 
 ```
 sdn-learning-switch/
-├── controller/
-│   └── learning_switch.py      # Ryu app — core controller logic
-├── topology/
-│   └── custom_topo.py          # Mininet topology (2 switches, 4 hosts)
-├── tests/
-│   ├── test_scenarios.py       # Unit + integration test suite
-│   └── run_tests.sh            # Shell wrapper for easy test execution
+├── learning_switch.py     
+├── custom_topo.py         
+├──  test_scenarios.py      
 ├── docs/
-│   └── screenshots/            # Wireshark + terminal captures
+│   └── screenshots/           
 └── README.md
 ```
 
@@ -101,7 +81,6 @@ sdn-learning-switch/
 | Open vSwitch | ≥ 2.13 | `sudo apt install openvswitch-switch` |
 | Ryu SDN Framework | ≥ 4.34 | `pip install ryu` |
 | Wireshark (optional) | any | `sudo apt install wireshark` |
-| iperf3 (optional) | any | `sudo apt install iperf3` |
 
 ### Install Mininet from source (recommended)
 
@@ -127,7 +106,6 @@ pip install eventlet==0.30.2 ryu
 
 ```bash
 git clone https://github.com/<your-username>/sdn-learning-switch.git
-cd sdn-learning-switch
 ```
 
 ### Step 2 — Start the Ryu controller
@@ -136,9 +114,10 @@ Open **Terminal 1**:
 
 
 ```bash
-ryu-manager controller/learning_switch.py --verbose
+cd ~/sdn-learning-switch
+source ryu-env/bin/activate
+ryu-manager learning_switch.py --verbose
 ```
-
 You should see:
 
 ```
@@ -152,7 +131,7 @@ You should see:
 Open **Terminal 2**:
 
 ```bash
-sudo python3 topology/custom_topo.py
+sudo python3 custom_topo.py
 ```
 
 You should see the Mininet CLI prompt:
@@ -160,9 +139,16 @@ You should see the Mininet CLI prompt:
 ```
 *** Topology ready — hints:
   mininet> pingall
+
   mininet> h1 ping -c3 h3
-  mininet> h1 iperf h2 &
+
   mininet> s1 ovs-ofctl dump-flows s1
+
+  mininet> s1 ip link set s1-eth3 down
+  mininet> h1 ping -c3 h3
+
+  mininet> s1 ip link set s1-eth3 down
+  mininet> h1 ping -c3 h3
 
 mininet>
 ```
@@ -173,10 +159,7 @@ Open **Terminal 3**:
 
 ```bash
 # Unit tests only (no network required)
-python3 tests/test_scenarios.py
-
-# Full suite (with Mininet running)
-sudo bash tests/run_tests.sh
+python3 test_scenarios.py
 ```
 
 ---
@@ -332,17 +315,6 @@ test_unknown_dst_floods ... ok
 Ran 6 tests in 0.001s
 OK
 ```
-
-### iperf3 throughput test
-
-```bash
-# Terminal A (inside Mininet)
-mininet> h2 iperf3 -s &
-mininet> h1 iperf3 -c 10.0.0.2 -t 5
-```
-
-Expected: ~95 Mbps (100 Mbps links, 5 ms RTT).
-
 ---
 
 ## Proof of Execution
@@ -360,18 +332,4 @@ Add screenshots to `docs/screenshots/`:
 
 ---
 
-## Troubleshooting
 
-| Symptom | Fix |
-|---------|-----|
-| `Connection refused :6653` | Start Ryu first: `ryu-manager controller/learning_switch.py` |
-| `RTNETLINK: File exists` | Clean up: `sudo mn -c` |
-| `pip install ryu` fails | Try `pip install ryu eventlet==0.30.2` |
-| Flows not installing | Check OVS version ≥ 2.13; ensure OF1.3 is enabled |
-| iperf shows 0 Mbps | Re-run `pingall` first to populate MAC tables |
-
----
-
-## License
-
-MIT — see `LICENSE` for details.
